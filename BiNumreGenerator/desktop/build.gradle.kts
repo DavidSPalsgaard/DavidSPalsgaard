@@ -1,6 +1,8 @@
-// PC-program (Windows, Linux, Mac): PDF-udskrift og kommandolinje. Brugerfladen kommer her.
+// PC-program (Windows, Linux, Mac): brugerflade (Compose), PDF-udskrift og kommandolinje.
 plugins {
     id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("org.jetbrains.compose")
     application
 }
 
@@ -20,5 +22,7 @@ application {
 dependencies {
     implementation(project(":core"))
     implementation("org.apache.pdfbox:pdfbox:3.0.3")
+    implementation(compose.desktop.currentOs)
+    implementation(compose.material3)
     testImplementation("junit:junit:4.13.2")
 }

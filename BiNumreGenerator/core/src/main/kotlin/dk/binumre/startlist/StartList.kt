@@ -29,6 +29,8 @@ data class StartEntry(
     val courseLength: Int? = null,
     /** Status fra OFeed (fx "Inactive", "Active", "OK", "DidNotStart") – tom for fil/URL. */
     val status: String = "",
+    /** Fravalgt i brugerfladen: løberen får ikke noget startnummer. */
+    val excluded: Boolean = false,
 ) {
     /** Løberen er registreret som startet (status fra OFeed, fx sat af O Checklist ved starten). */
     val started: Boolean get() = status.isNotEmpty() && status !in NOT_STARTED

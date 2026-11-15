@@ -17,7 +17,11 @@ import java.time.ZoneId
 import kotlin.system.exitProcess
 
 private val USAGE = """
-    Brug: binumre [valg] <startliste> [<startliste etape 2> ...]
+    Brug: binumre                        Åbner programmets vindue
+          binumre --gui [<startliste> ...] [--project <fil.json>]
+                                         Åbner vinduet med startlisten/projektet indlæst
+          binumre [valg] <startliste> [<startliste etape 2> ...]
+                                         Skriver PDF'en direkte (kommandolinje)
 
     Startlisten er IOF XML 3.0 / 2.0.3 (fx fra MeOS), Excel (.xlsx) eller CSV.
     Ved flerdagesløb angives én startliste pr. etape i rækkefølge.
@@ -39,6 +43,11 @@ private val USAGE = """
 """.trimIndent()
 
 fun main(args: Array<String>) {
+    // Uden argumenter (dobbeltklik) åbnes brugerfladen; med argumenter er det kommandolinjen
+    if (args.isEmpty() || args[0] == "--gui") {
+        dk.binumre.desktop.ui.runGui(args.drop(1))
+        return
+    }
     try {
         run(args)
     } catch (e: StartListException) {
@@ -54,7 +63,7 @@ private fun fail(message: String): Nothing {
 }
 
 private fun run(args: Array<String>) {
-    if (args.isEmpty() || "-h" in args || "--help" in args) {
+    if ("-h" in args || "--help" in args) {
         println(USAGE)
         return
     }

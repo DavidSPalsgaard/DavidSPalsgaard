@@ -31,7 +31,7 @@ data class Bib(
         StartEntry(given = given, family = family, name = name).displayName(format)
 }
 
-/** Resultatet af at lave startnumre: numrene og hvor mange løbere der blev sprunget over uden startnummer. */
+/** Resultatet af at lave startnumre: numrene og hvor mange (ikke fravalgte) løbere der blev sprunget over uden startnummer. */
 data class BibSet(val bibs: List<Bib>, val withoutNumber: Int)
 
 object BibBuilder {
@@ -58,11 +58,15 @@ object BibBuilder {
 
     /** En løber med flere SI-brikker står flere gange i listen – kun ét startnummer pr. løber. */
     private fun single(entries: List<StartEntry>): List<Bib> =
-        entries.distinctBy { listOf(it.bib, personKey(it), it.cls) }.map { bib(it, it.bib, listOf(stage(it))) }
+        included(entries) { listOf(it.bib, personKey(it), it.cls) }.map { bib(it, it.bib, listOf(stage(it))) }
 
     private fun relay(entries: List<StartEntry>): List<Bib> =
-        entries.distinctBy { listOf(it.bib, it.teamName, it.leg, personKey(it), it.cls) }
+        included(entries) { listOf(it.bib, it.teamName, it.leg, personKey(it), it.cls) }
             .map { bib(it, teamNumber(it.bib, it.leg), listOf(stage(it))) }
+
+    /** Én linje pr. løber (første forekomst); løbere hvor en af linjerne er fravalgt, udelades. */
+    private fun included(entries: List<StartEntry>, key: (StartEntry) -> Any): List<StartEntry> =
+        entries.groupBy(key).values.filter { g -> g.none { it.excluded } }.map { it.first() }
 
     /** Holdets nummer: "12.1", "12-1" og "12/1" bliver til "12" når tallet efter tegnet er turen. */
     fun teamNumber(bib: String, leg: String): String {
@@ -72,7 +76,7 @@ object BibBuilder {
 
     /** Samme løber på tværs af etaper: samme SI-brik, ellers samme navn og klub. */
     private fun multiday(lists: List<List<StartEntry>>): List<Bib> {
-        class Runner(var entry: StartEntry, val stages: Array<BibStage?>, var number: String)
+        class Runner(var entry: StartEntry, val stages: Array<BibStage?>, var number: String, var excluded: Boolean = false)
         val runners = mutableListOf<Runner>()
         val byCard = mutableMapOf<Long, Runner>()
         val byPerson = mutableMapOf<String, Runner>()
@@ -82,12 +86,13 @@ object BibBuilder {
                     ?: Runner(e, arrayOfNulls(lists.size), "").also { runners += it }
                 if (r.stages[i] == null) r.stages[i] = stage(e)
                 if (r.number.isEmpty()) r.number = e.bib
+                if (e.excluded) r.excluded = true
                 if (r.entry.card == null && e.card != null) r.entry = r.entry.copy(card = e.card)
                 e.card?.let { byCard.putIfAbsent(it, r) }
                 byPerson.putIfAbsent(personKey(e), r)
             }
         }
-        return runners.map { bib(it.entry, it.number, it.stages.toList()) }
+        return runners.filter { !it.excluded }.map { bib(it.entry, it.number, it.stages.toList()) }
     }
 
     private fun personKey(e: StartEntry) =

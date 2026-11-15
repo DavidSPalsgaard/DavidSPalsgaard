@@ -34,16 +34,18 @@ object BibLayout {
         val texts = BibTexts.of(project.language)
         val split = HEIGHT - bottomHeight(bib)
 
-        for (g in project.graphics) c.image(g.file, g.x, g.y, g.width, g.height)
-
+        // Rækkefølge: farvede flader, så grafik, så tekst – grafik må gerne ligge i turens bånd
         var top = 0.0
         val relay = project.type == BibType.RELAY && bib.leg.isNotEmpty()
+        val color = if (relay) project.legColor(bib.leg) else 0
         if (relay) {
-            val color = project.legColor(bib.leg)
             c.rect(0.0, 0.0, WIDTH, LEG_BAND, color)
-            c.text("${texts.leg} ${bib.leg}", WIDTH / 2, 12.2, BibFont.BOLD, 11.0, Align.CENTER, contrast(color))
             // Også ved kanten løberen ser, når nummeret vippes op
             c.rect(0.0, HEIGHT - 3.0, WIDTH, 3.0, color)
+        }
+        for (g in project.graphics) c.image(g.file, g.x, g.y, g.width, g.height)
+        if (relay) {
+            c.text("${texts.leg} ${bib.leg}", WIDTH / 2, 12.2, BibFont.BOLD, 11.0, Align.CENTER, contrast(color))
             top = LEG_BAND
         }
         if (project.eventName.isNotEmpty()) {
