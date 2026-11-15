@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Opdigtede testdata: stafet i IOF XML 3.0. -->
+<StartList xmlns="http://www.orienteering.org/datastandard/3.0" iofVersion="3.0" creator="Test">
+<Event><Name>Teststafetten</Name><StartTime><Date>2026-03-29</Date></StartTime></Event>
+<ClassStart>
+<Class><Name>H/D Åben</Name></Class>
+<StartName>S1</StartName>
+<TeamStart>
+<Name>OK Testklub 1</Name>
+<Organisation><Name>OK Testklub</Name></Organisation>
+<BibNumber>12</BibNumber>
+<TeamMemberStart>
+<Person><Name><Family>Eksempel</Family><Given>Anna</Given></Name></Person>
+<Start><Leg>1</Leg><StartTime>2026-03-29T10:00:00+02:00</StartTime><ControlCard>8000001</ControlCard><Course><Name>1A</Name><Length>4200</Length></Course></Start>
+</TeamMemberStart>
+<TeamMemberStart>
+<Person><Name><Family>Prøve</Family><Given>Bo</Given></Name></Person>
+<Start><Leg>2</Leg><BibNumber>12-2</BibNumber><ControlCard>8000002</ControlCard></Start>
+</TeamMemberStart>
+<TeamMemberStart>
+<Person><Name><Family>Demo</Family><Given>Carl</Given></Name></Person>
+<Start><Leg>3</Leg><ControlCard>8000003</ControlCard></Start>
+</TeamMemberStart>
+</TeamStart>
+</ClassStart>
+</StartList>
